@@ -25,7 +25,7 @@ public class LineWithArrowAndXExample extends JPanel {
         for (int i = 0; i < xCoords.length; i++) {
             xCoords[i] = xCoords[i] * 30;
         }
-        paintAxex(g2d, xCoords, yCoord);
+        paintAxex(g2d, xCoords, yCoord, "主键索引");
 
 
         // 重置 g2d
@@ -36,15 +36,15 @@ public class LineWithArrowAndXExample extends JPanel {
         for (int i = 0; i < xCoords.length; i++) {
             xCoords[i] = xCoords[i] * 30;
         }
-        paintAxex(g2d, xCoords, yCoord);
+        paintAxex(g2d, xCoords, yCoord, "c 索引");
 
     }
 
-    private void paintAxex(Graphics2D g2d, int[] xCoords, int yCoord) {
+    private void paintAxex(Graphics2D g2d, int[] xCoords, int yCoord, String index) {
         // 设置线条颜色
         g2d.setColor(Color.BLACK);
 
-//        g2d.drawString("c 索引", xCoords[0]);
+        g2d.drawString(index, xCoords[0] - 100, yCoord);
         
         // 绘制多条横向线段
         for (int i = 0; i < xCoords.length - 1; i++) {
@@ -53,12 +53,12 @@ public class LineWithArrowAndXExample extends JPanel {
 
         // 在每个横坐标点上方绘制坐标值
         for (int i = 0; i < xCoords.length; i++) {
-            g2d.drawString(Integer.toString(xCoords[i]), xCoords[i] - 5, yCoord + 20);
+            g2d.drawString(Integer.toString(xCoords[i] / LineWithArrowAndXExample.rate), xCoords[i] - 5, yCoord + 20);
             g2d.drawLine(xCoords[i], yCoord, xCoords[i], yCoord - 5);
         }
 
         int y = yCoord;    // y 坐标 0 对应的 y 值
-        List<Point> points = Arrays.asList(new Point(5, false), new Point(6, true));
+        List<Point> points = Arrays.asList(new Point(5 * LineWithArrowAndXExample.rate, false), new Point(6 * LineWithArrowAndXExample.rate, true));
         paintArrowhead(g2d, points, y);
     }
 
@@ -67,14 +67,22 @@ public class LineWithArrowAndXExample extends JPanel {
             Point point = points.get(i);
             int x = point.getX();
             boolean blocked = point.isBlocked();
-            String str = "";
+            ImageIcon icon;
             if (blocked) {
                 // 画箭身（从 [5, 0] 到 [5, 20]）
                 g2d.setColor(Color.RED); // 设置箭头颜色为红色
-                str = "❌";
+                icon = new ImageIcon(getClass().getResource("/img/wrong.png"));
+                // 缩放图片到 32x32
+                Image img = icon.getImage();
+                Image newImg = img.getScaledInstance(10, 10, Image.SCALE_SMOOTH); // 平滑缩放
+                icon = new ImageIcon(newImg);
             } else {
                 g2d.setColor(Color.GREEN);
-                str = "✅";
+                icon = new ImageIcon(getClass().getResource("/img/right.png"));
+                // 缩放图片到 32x32
+                Image img = icon.getImage();
+                Image newImg = img.getScaledInstance(10, 10, Image.SCALE_SMOOTH); // 平滑缩放
+                icon = new ImageIcon(newImg);
             }
             g2d.setStroke(new BasicStroke(2)); // 设置箭身的线宽
             // 绘制箭头的线（箭身）
@@ -83,8 +91,9 @@ public class LineWithArrowAndXExample extends JPanel {
             int[] xArrow = {x - 5, x, x + 5}; // 箭头尖端的宽度
             int[] yArrow = {y - 15, y - 5, y - 15}; // 箭头尖端的高度
             g2d.fillPolygon(xArrow, yArrow, 3); // 绘制箭头的尖端
-            g2d.setFont(new Font("Default" ,Font.BOLD, 20)); // 设置字体和大小
-            g2d.drawString(str, x-10, y - 30); // 在箭头上边绘制
+            g2d.setFont(new Font("Segoe UI Emoji" ,Font.BOLD, 20)); // 设置字体和大小
+//            g2d.drawString(str, x-10, y - 30); // 在箭头上边绘制
+            icon.paintIcon(this, g2d, x - 5, y - 40);
         }
     }
 
