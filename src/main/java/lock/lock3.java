@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class lock2 {
+public class lock3 {
     // 修改为你的连接串/账号
     static final String URL = "jdbc:mysql://127.0.0.1:3306/mysql_demo?useSSL=false&serverTimezone=UTC&allowMultiQueries=true";
     static final String USER = "root";
@@ -18,21 +18,27 @@ public class lock2 {
         try (Statement s1 = conn1.createStatement()) {
             // 降低锁等待时间，超过时间后 JDBC 会抛出 SQLTransactionRollbackException 异常
             s1.execute("set innodb_lock_wait_timeout=3");
-            String sql = "select * from t where id > 10 and id <= 15 for update;";
+            String sql = "select * from t where c >= 10 and c < 11 for update;";
             System.out.println("[C1] 执行: " + sql + "（保持未提交）");
             s1.executeQuery(sql);
 
-            System.out.println("[C1] 已持有锁（RR 下：主键索引上的 (10, 15]）");
+            System.out.println("[C1] 已持有锁（RR 下：c 索引树的(5, 10], (10, 15) + 主键索引的 id = 10 的行锁）");
         }
 
 
 
         // 连接2：发起各种操作来验证锁范围
         List<String> testLock = Arrays.asList(
-                "/* 尝试获取主键索引 id = 10 的行锁*/ update t set d = d + 1 where id = 10",
-                "/* 尝试获取主键索引 id = 15 的行锁*/ update t set d = d + 1 where id = 15",
-                "/* 向主键索引的间隙(10, 15)插入数据:id = 11 */ insert into t values(11, 99, 99);",
-                "/* 向主键索引的间隙(15, 20)插入数据:id = 17 */ insert into t values(17, 99, 99);"
+                "/* 尝试获取 c 索引树 c = 5 的行锁*/ update t set d = d + 1 where c = 5",
+                "/* 尝试获取 c 索引树 c = 10 的行锁*/ update t set d = d + 1 where c = 10",
+                "/* 尝试获取 c 索引树 c = 15 的行锁*/ update t set d = d + 1 where c = 15",
+                "/* 向 c 索引树的间隙(5, 10)插入数据:c = 8 */ insert into t values(99, 8, 99)",
+                "/* 向 c 索引树的间隙(10, 15)插入数据:c = 12 */ insert into t values(99, 12, 99)",
+                "/* 向主键索引的间隙(5, 10)插入数据:id = 8 */ insert into t values(8, 99, 99)",
+                "/* 向主键索引的间隙(10, 15)插入数据:id = 8 */ insert into t values(12, 99, 99)",
+                "/* 尝试获取主键索引 id = 5 的行锁 */ update t set d = d + 1 where id = 5",
+                "/* 尝试获取主键索引 id = 10 的行锁 */ update t set d = d + 1 where id = 10",
+                "/* 尝试获取主键索引 id = 15 的行锁 */ update t set d = d + 1 where id = 15"
         );
         try (Connection conn2 = DriverManager.getConnection(URL, USER, PASS)) {
             conn2.setAutoCommit(false);
