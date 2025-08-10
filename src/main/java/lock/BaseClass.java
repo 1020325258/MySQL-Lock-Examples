@@ -26,8 +26,7 @@ public class BaseClass {
             // 降低锁等待时间，超过时间后 JDBC 会抛出 SQLTransactionRollbackException 异常
             s1.execute("set innodb_lock_wait_timeout=3");
             System.out.println("[C1] 执行: " + lockSQL + "（保持未提交）");
-            s1.executeQuery(lockSQL);
-
+            s1.execute(lockSQL);
         }
 
         // 连接2：发起各种操作来验证锁范围
