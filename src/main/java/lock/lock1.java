@@ -24,12 +24,13 @@ public class lock1 extends BaseClass{
          * 1、c 索引： (0, 5] 和 (5, 10) 的锁。
          * 2、主键索引：id = 5 的行锁。
          */
-        String lockSQL = "select id from t where c=5 for update";
+        String lockSQL = "select * from t where c=5 for update";
 
 
         // 连接2：发起各种操作来验证锁范围
         // 主键索引加锁
         List<String> primaryIndexSQL = Arrays.asList(
+                "/* 向主键索引的间隙(0, 5)插入数据:id = 3 */ insert into t values(3, 99, 99)",
                 "/* 尝试获取主键索引 id = 5 的行锁*/ update t set d = d+1 where id = 5",
                 "/* 向主键索引的间隙(5, 10)插入数据:id = 8 */ insert into t values(8, 99, 99)"
         );
