@@ -57,7 +57,7 @@ public class LineWithArrowAndXExample extends JPanel {
         g2d = g2d_back;
         // 横坐标点（5, 10, 15, 20）
         xCoords = new int[]{0, 5, 10, 15, 20};
-        yCoord = 500; // 固定 y 坐标为 100，绘制水平线
+        yCoord = 300; // 固定 y 坐标为 100，绘制水平线
         for (int i = 0; i < xCoords.length; i++) {
             xCoords[i] = translateX(xCoords[i]);
         }

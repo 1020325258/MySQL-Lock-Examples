@@ -39,6 +39,7 @@ public class lock1 extends BaseClass{
                 "/* 尝试获取 c 索引 c = 5 的行锁 */ update t set d = d+1 where c=5",
                 "/* 向 c 索引的间隙(0, 5)插入数据:c = 4 */ insert into t values(99, 4, 99)",
                 "/* 向 c 索引的间隙(5, 10)插入数据:c = 8 */ insert into t values(99, 8, 99)",
+                "/* 尝试获取 c 索引 c = 10 的行锁 */ update t set d = d+1 where c=10",
                 "/* 向 c 索引的间隙(10, 15)插入数据:c = 11 */insert into t values(99, 11, 99)"
         );
 

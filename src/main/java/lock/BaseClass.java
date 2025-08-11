@@ -1,6 +1,7 @@
 package lock;
 
 import javax.swing.*;
+import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class BaseClass {
         // 设置 JFrame 属性（增加窗口宽度以适应更长的线段）
         frame.setSize(1000, 1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        panel.setBackground(Color.WHITE);
         // 将自定义的 JPanel 添加到 JFrame
         frame.add(panel);
 
